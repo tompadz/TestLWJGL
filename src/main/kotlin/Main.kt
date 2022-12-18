@@ -4,20 +4,32 @@ import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL
 
-
 private const val WINDOW_TITLE = "MainWindow"
 
 class Main  {
 
+    private lateinit var shader: Shader
     private lateinit var renderer: Renderer
     private lateinit var window: Window
 
     private var mesh = Mesh(
         vertex = arrayOf(
-            Vertex(Vector3f(-0.5f, 0.5f, 0f)),
-            Vertex(Vector3f(-0.5f, -0.5f, 0f)),
-            Vertex(Vector3f(0.5f, -0.5f, 0f)),
-            Vertex(Vector3f(0.5f, 0.5f, 0f)),
+            Vertex(
+                Vector3f(-0.5f, 0.5f, 0f),
+                Vector3f(1.0f, 0.0f, 0.0f)
+            ),
+            Vertex(
+                Vector3f(-0.5f, -0.5f, 0f),
+                Vector3f(0.0f, 1.0f, 0.0f)
+            ),
+            Vertex(
+                Vector3f(0.5f, -0.5f, 0f),
+                Vector3f(1.0f, 0.0f, 0.0f)
+            ),
+            Vertex(
+                Vector3f(0.5f, 0.5f, 0f),
+                Vector3f(1.0f, 1.0f, 0.0f)
+            ),
         ),
         indices = intArrayOf(
             0, 1, 2,
@@ -27,20 +39,26 @@ class Main  {
 
     private fun init() {
         println("initialize application")
-        val shared = Shader(
+        shader = Shader(
             vertexFile = "/Users/jj/Documents/_intelliJ/TestLWJGL/src/main/resources/shaders/mainVertex.glsl",
             fragmentFile =  "/Users/jj/Documents/_intelliJ/TestLWJGL/src/main/resources/shaders/mainFragment.glsl"
         )
-        renderer = Renderer(shared)
+        renderer = Renderer(shader)
         window = Window(title = WINDOW_TITLE).create()
         mesh.create()
-        shared.create()
+        shader.create()
     }
 
     fun run() {
         init()
         loop()
+        destroy()
+    }
+
+    private fun destroy() {
         window.destroy()
+        mesh.destroy()
+        shader.destroy()
     }
 
     private fun loop() {

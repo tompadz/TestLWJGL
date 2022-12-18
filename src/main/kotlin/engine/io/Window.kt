@@ -31,7 +31,7 @@ class Window(
     private var _frames = 0
     val frames get() = _frames
 
-    private var background = Vector3f(0f, 0f, 0f)
+    private var background = Vector3f(1f, 1f, 0f)
 
     fun create(): Window {
 
@@ -43,12 +43,13 @@ class Window(
 
         //options
         glfwDefaultWindowHints() // optional, the current window hints are already the default
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE) // According to Apple docs, non-core profiles are limited to version 2.1.
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) // Should be true for macOS, according to GLFW docs, to get core profile.
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE) // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE) // the window will be resizable
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3)
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE) // According to Apple docs, non-core profiles are limited to version 2.1.
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE) // Should be true for macOS, according to GLFW docs, to get core profile.
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2)
+
 
         // Create the window
         window = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL)
