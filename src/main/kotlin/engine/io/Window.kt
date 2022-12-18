@@ -5,6 +5,9 @@ import org.joml.Vector3f
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.glfw.GLFWWindowPosCallbackI
+import org.lwjgl.glfw.GLFWWindowSizeCallback
+import org.lwjgl.glfw.GLFWWindowSizeCallbackI
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryStack
@@ -14,22 +17,25 @@ import utils.SystemUtil
 private const val DEFAULT_WINDOW_WIDTH = 1280
 private const val DEFAULT_WINDOW_HEIGHT = 720
 
-//TODO add resize callback
-//TODO add window position callback
-
 class Window(
     val title: String,
-    private val width: Int = DEFAULT_WINDOW_WIDTH,
-    private val height: Int = DEFAULT_WINDOW_HEIGHT,
+    var width: Int = DEFAULT_WINDOW_WIDTH,
+    var height: Int = DEFAULT_WINDOW_HEIGHT,
     private val showFpsInTitle: Boolean = true,
 ) {
 
     private var window = 0L
 
     //frames
+    var frames = 0
+        private set
     private var createTime = 0.0
     private var nsFrames = 0
-    var frames = 0
+
+    var windowXPos = 0
+        private set
+
+    var windowYPos = 0
         private set
 
     private var background = Vector3f(0f, 0f, 0f)
@@ -101,10 +107,25 @@ class Window(
     }
 
     private fun initCallbacks() {
+
+        //callbacks from Input.kt
         glfwSetKeyCallback(window, input.keyboardCallback)
         glfwSetMouseButtonCallback(window, input.mouseButtonCallback)
         glfwSetCursorPosCallback(window, input.cursorPositionCallback)
         glfwSetScrollCallback(window, input.scrollCallback)
+
+        //window callbacks
+        glfwSetWindowSizeCallback(window) { _, cWidth, cHeight ->
+            width = cWidth
+            height = cHeight
+            windowListener?.onWindowSizeChange(width, height)
+        }
+
+        glfwSetWindowPosCallback(window) { _, xPos, yPos ->
+            windowXPos = xPos
+            windowYPos = yPos
+            windowListener?.onWindowPoseChange(windowXPos, windowYPos)
+        }
     }
 
     private fun setWindowHints() {
@@ -132,9 +153,10 @@ class Window(
             glfwGetWindowSize(window, pWidth, pHeight) // Get the window size passed to glfwCreateWindow
             val monitor = glfwGetPrimaryMonitor()
             val videoMode = glfwGetVideoMode(monitor) ?: throw RuntimeException("Failed to create video mode")
-            val xPos = (videoMode.width() - pWidth[0]) / 2
-            val yPos = (videoMode.height() - pHeight[0]) / 2
-            glfwSetWindowPos(window, xPos, yPos) // Center the window
+            windowXPos = (videoMode.width() - pWidth[0]) / 2
+            windowYPos = (videoMode.height() - pHeight[0]) / 2
+            glfwSetWindowPos(window, windowXPos, windowYPos) // Center the window
+            windowListener?.onWindowPoseChange(windowXPos, windowYPos)
         }
     }
 
