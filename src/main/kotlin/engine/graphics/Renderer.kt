@@ -7,14 +7,11 @@ import org.lwjgl.opengl.GL30
 class Renderer(
     private val shader: Shader
 ) {
-
     fun renderMesh(mesh: Mesh) {
-
-        GL30.glBindVertexArray(mesh.vertexArraysObjects)
+        GL30.glBindVertexArray(mesh.vAO)
         GL30.glEnableVertexAttribArray(0)
         GL30.glEnableVertexAttribArray(1)
-
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.indicesBufferObject)
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.iBO)
 
         shader.bind()
         GL11.glDrawElements(
